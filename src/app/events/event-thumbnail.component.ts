@@ -4,18 +4,31 @@ import { Component, EventEmitter, Input, Output } from "@angular/core";
     selector: 'event-thumbnail',
     template: `
     <div class="well hoverwell thumbnail">
-    <h2>{{event.name}}</h2>
-    <div>Date: {{event.date}}</div>
-    <div>Time: {{event.time}}</div>
-    <div>Price: \${{event.price}}</div>
-    <div>
-        <span>Location: {{event.location.address}}</span>
-        <span class="pad-left">{{event.location.city}}, {{event.location.country}}</span>
+    <h2>{{event?.name}}</h2>
+    <div>Date: {{event?.date}}</div>
+    <div [ngClass]="getStartTimeClass()"
+    [ngSwitch]="event?.time">
+    Time: {{event?.time}}
+    <span *ngSwitchCase="'8:00 am'">(Early Start)</span>
+    <span *ngSwitchCase="'10:00 am'">(Late Start)</span>
+    <span *ngSwitchDefault>(Normal Start)</span>
     </div>
-    <button class="btn btn-primary" (click)="handleClickMe()">Click Me!</button>
+    <div>Price: \${{event?.price}}</div>
+    <div *ngIf="event?.location">
+        <span>Location: {{event?.location?.address}}</span>
+        <span class="pad-left">{{event?.location?.city}}, {{event?.location?.country}}</span>
+    </div>
+    <div *ngIf="event?.onlineURL">
+        Online URL: {{event?.onlineURL}}
+        </div>
 </div>`,
+    //[ngClass]="{green: event?.time === '8:00 am', bold: event?.time === '8:00 am'}"
+    //[hidden]="!event?.location"
     //templateUrl: './events/event-thumbnail.component.html'
     styles: [`
+    .green { color: #003300 !important; }
+    .bold { font-weight: bold;}
+    .thumbnail { min-height: 210px; }
     .pad-left { margin-left: 10px; }
     .well div { color: #bbb }
     `]
@@ -25,12 +38,13 @@ export class EventThumbnailComponent {
     @Input() event: any;
     @Output() eventClick = new EventEmitter();
     //someProperty: any = "some value";
+    
+    getStartTimeClass(){
+        // const isEarlyStart= this.event && this.event.time ==='8:00 am';
+        // return {green: isEarlyStart, bold: isEarlyStart}
 
-    handleClickMe() {
-        this.eventClick.emit('foo');
+        if(this.event && this.event.time ==='8:00 am')
+        return 'green bold';// sau ['green', 'bold']
+        return '';
     }
-
-    // logFoo() {
-    //     console.log('foo');
-    // }
 }
